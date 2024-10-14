@@ -5,13 +5,10 @@ interface UseAutoResizeProps {
     canvas: fabric.Canvas | null;
     container: HTMLDivElement | null;
 }
-export const useAutoSize = ({
-    canvas,
-    container,
-}: UseAutoResizeProps) => {
 
-    const autoZoom = useCallback(() =>{
-        if(!canvas || !container) return;
+export const useAutoSize = ({ canvas, container }: UseAutoResizeProps) => {
+    const autoZoom = useCallback(() => {
+        if (!canvas || !container) return;
 
         const width = container.offsetWidth;
         const height = container.offsetHeight;
@@ -20,17 +17,17 @@ export const useAutoSize = ({
         canvas.setHeight(height);
 
         const center = canvas.getCenter();
-
         const zoomRatio = 0.85;
         const localWorkspace = canvas
-        .getObjects()
-        .find((obj) => obj.name === "clip");
+            .getObjects()
+            .find((obj) => obj.name === "clip");
 
-       // @ts-expect-error: Required due to incompatible types
+        if (!localWorkspace) return; // Ensure localWorkspace exists
+
+        // @ts-expect-error: findScaleToFit expects a fabric object and returns a scale factor
         const scale = fabric.util.findScaleToFit(localWorkspace, {
             width: width,
             height: height,
-
         });
 
         const zoom = zoomRatio * scale;
@@ -38,48 +35,35 @@ export const useAutoSize = ({
         canvas.setViewportTransform(fabric.iMatrix.concat());
         canvas.zoomToPoint(new fabric.Point(center.left, center.top), zoom);
 
-        if(!localWorkspace) return;
-
         const workspaceCenter = localWorkspace.getCenterPoint();
         const viewportTransform = canvas.viewportTransform;
 
-        if(canvas.width === undefined || canvas.height === undefined || !viewportTransform) return;
+        if (canvas.width === undefined || canvas.height === undefined || !viewportTransform) return;
 
         viewportTransform[4] = canvas.width / 2 - workspaceCenter.x * viewportTransform[0];
-
         viewportTransform[5] = canvas.height / 2 - workspaceCenter.y * viewportTransform[3];
 
         canvas.setViewportTransform(viewportTransform);
 
-        localWorkspace.clone((cloned: fabric.Rect) =>{
+        localWorkspace.clone((cloned: fabric.Rect) => {
             canvas.clipPath = cloned;
             canvas.requestRenderAll();
-        })
-
+        });
     }, [canvas, container]);
 
-
     useEffect(() => {
-
-
         let resizeObserver: ResizeObserver | null = null;
         if (canvas && container) {
-            resizeObserver = new ResizeObserver((entries) => {
-             
+            resizeObserver = new ResizeObserver(() => {
                 autoZoom();
-
             });
             resizeObserver.observe(container);
         }
 
-            return () => {
-                if (resizeObserver) {
-                    resizeObserver.disconnect();
-                }
-            };
-        
-
-
+        return () => {
+            if (resizeObserver) {
+                resizeObserver.disconnect();
+            }
+        };
     }, [canvas, container, autoZoom]);
-
-}
+};
