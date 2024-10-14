@@ -21,7 +21,7 @@ const buildEditor = ({
         if(!center){
             return;
         }
-        // @ts-expect-error
+        // @ts-expect-error: Required due to incompatible types
         canvas._centerObject(object, center);
         // canvas.centerObject(object);
     }

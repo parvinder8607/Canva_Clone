@@ -26,7 +26,7 @@ export const useAutoSize = ({
         .getObjects()
         .find((obj) => obj.name === "clip");
 
-        // @ts-expect-error
+       // @ts-expect-error: Required due to incompatible types
         const scale = fabric.util.findScaleToFit(localWorkspace, {
             width: width,
             height: height,
