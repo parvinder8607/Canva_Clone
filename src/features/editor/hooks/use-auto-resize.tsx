@@ -26,7 +26,7 @@ export const useAutoSize = ({
         .getObjects()
         .find((obj) => obj.name === "clip");
 
-        //@ts-ignore
+        // @ts-expect-error
         const scale = fabric.util.findScaleToFit(localWorkspace, {
             width: width,
             height: height,

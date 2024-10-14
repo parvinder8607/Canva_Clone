@@ -21,7 +21,7 @@ const buildEditor = ({
         if(!center){
             return;
         }
-        // @ts-ignore
+        // @ts-expect-error
         canvas._centerObject(object, center);
         // canvas.centerObject(object);
     }

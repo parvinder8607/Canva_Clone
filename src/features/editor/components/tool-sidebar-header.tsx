@@ -1,4 +1,4 @@
-import { ActiveTool } from "../types";
+// import { ActiveTool } from "@/features/editor/types";
 
 interface ToolSidebarHeaderProps {
   title: string;
